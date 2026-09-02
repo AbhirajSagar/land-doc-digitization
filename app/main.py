@@ -24,27 +24,81 @@ def is_valid_image(file: UploadFile) -> bool:
 
     return False
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Land Document Processor API. Use the /upload endpoint to process images."}
+
 @app.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_image(file: UploadFile = File(...)):
-    if not file.filename:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="No filename provided in upload.")
+    try:
+        if not file.filename:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No filename provided in upload."
+            )
 
-    if not is_valid_image(file):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"Invalid file type '{file.content_type}'. Only image files ({', '.join(ALLOWED_IMAGE_EXTENSIONS)}) are allowed.")
+        if not is_valid_image(file):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid file type '{file.content_type}'. Only image files ({', '.join(ALLOWED_IMAGE_EXTENSIONS)}) are allowed."
+            )
 
-    contents = await file.read()
-    nparr = np.frombuffer(contents, np.uint8)
-    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        contents = await file.read()
 
-    if image is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to decode image. Please ensure the file is a valid uncorrupted image.")
+        if not contents:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The uploaded file is empty."
+            )
 
-    processed_image_path = preprocess(image)
-    response = extract(processed_image_path)
-    extracted_data = process_by_llm(response, processed_image_path)
-    print(extracted_data)
+        nparr = np.frombuffer(contents, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    return {
-        "message": "Image uploaded and preprocessed successfully",
-        "fields": extracted_data
-    }
+        if image is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Failed to decode image. Please ensure the file is a valid uncorrupted image."
+            )
+
+        processed_image_path = preprocess(image)
+
+        if not processed_image_path:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to preprocess the image."
+            )
+
+        response = extract(processed_image_path)
+
+        if response is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to extract data from the image."
+            )
+
+        extracted_data = process_by_llm(
+            response,
+            processed_image_path
+        )
+
+        if not extracted_data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to process the extracted data."
+            )
+
+        return {
+            "message": "Image processed successfully.",
+            "fields": extracted_data.get("fields", [])
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        print(f"Upload processing error: {e}")
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while processing the image."
+        )
