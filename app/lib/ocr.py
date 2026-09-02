@@ -47,7 +47,6 @@ def extract(image_path: str):
 
                 extracted.append({
                     "text": text.strip(),
-                    "confidence": round(layout.confidence * 100, 2),
                     "bounding_box": vertices
                 })
 

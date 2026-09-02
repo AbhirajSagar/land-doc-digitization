@@ -8,11 +8,6 @@ class ExtractedField(BaseModel):
     value: str = Field(
         description="Extracted value preserved from the document text."
     )
-    confidence: float = Field(
-        ge=0.0,
-        le=100.0,
-        description="Confidence score between 0.0 and 100.0 based on OCR clarity and document legibility."
-    )
 
 
 class LandRecordResponse(BaseModel):
@@ -25,7 +20,7 @@ class LandRecordResponse(BaseModel):
         description="Primary language(s) detected in the document (e.g. 'Hindi', 'Marathi', 'English')."
     )
     fields: List[ExtractedField] = Field(
-        description="List of extracted key-value fields with confidence scores."
+        description="List of extracted key-value fields."
     )
 
 
@@ -50,15 +45,11 @@ def get_response_schema():
                         },
                         "value": {
                             "type": "STRING"
-                        },
-                        "confidence": {
-                            "type": "NUMBER"
                         }
                     },
                     "required": [
                         "key",
-                        "value",
-                        "confidence"
+                        "value"
                     ]
                 }
             }

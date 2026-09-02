@@ -19,7 +19,6 @@ Extraction Rules:
 3. Preserve the exact value from the document (including original Devanagari or regional text, numerals, and punctuation).
 4. Use the document image to visually verify and correct OCR noise or character misrecognitions (e.g. confusing 8/B, 0/O, 1/l, or complex Devanagari ligatures).
 5. Leverage spatial layout and bounding boxes to accurately match field labels to their corresponding values.
-6. Provide an accurate confidence score (0.0 to 100.0) for each field based on document clarity and OCR confidence.
 """
 
 
