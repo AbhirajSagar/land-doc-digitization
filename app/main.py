@@ -89,8 +89,11 @@ async def upload_image(file: UploadFile = File(...)):
 
         return {
             "message": "Image processed successfully.",
-            "fields": extracted_data.get("fields", [])
+            "document_type": extracted_data.get("document_type"),
+            "language": extracted_data.get("language"),
+            "fields": extracted_data.get("fields", []),
         }
+
 
     except HTTPException:
         raise
