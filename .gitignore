@@ -1,0 +1,66 @@
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments and Virtualenv (including uv)
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Environment Variables and Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*service_account*.json
+client_secret*.json
+token.json
+
+# Application Output and Uploads
+output/
+uploads/
+tmp/
+temp/
+*.log
+
+# Testing, Coverage, and Linting
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Distribution and Packaging
+dist/
+build/
+*.egg-info/
+.eggs/
+wheels/
+*.whl
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.cursor/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
